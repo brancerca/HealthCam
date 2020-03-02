@@ -47,8 +47,8 @@ flutter:
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
   assets:
-   - assets/cuatro.tflite 
-   - assets/cuatro.txt
+   - assets/ssdv2.tflite 
+   - assets/ssdv2.txt
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

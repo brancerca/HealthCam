@@ -3,8 +3,6 @@ import 'package:camera/camera.dart';
 import 'package:tflite/tflite.dart';
 import 'dart:math' as math;
 
-import 'models.dart';
-
 typedef void Callback(List<dynamic> list, int h, int w);
 
 class Camera extends StatefulWidget {
@@ -50,72 +48,28 @@ class _CameraState extends State<Camera> {
 
             int startTime = new DateTime.now().millisecondsSinceEpoch;
 
-            if (widget.model == mobilenet) {
-              Tflite.runModelOnFrame(
-                bytesList: img.planes.map((plane) {
-                  return plane.bytes;
-                }).toList(),
-                imageHeight: img.height,
-                imageWidth: img.width,
-                numResults: 2,
-              ).then((recognitions) {
-                int endTime = new DateTime.now().millisecondsSinceEpoch;
-                print("Detection took ${endTime - startTime}");
-
-                widget.setRecognitions(recognitions, img.height, img.width);
-
-                isDetecting = false;
-              });
-            } else if (widget.model == posenet) {
-              Tflite.runPoseNetOnFrame(
-                bytesList: img.planes.map((plane) {
-                  return plane.bytes;
-                }).toList(),
-                imageHeight: img.height,
-                imageWidth: img.width,
-                numResults: 2,
-              ).then((recognitions) {
-                int endTime = new DateTime.now().millisecondsSinceEpoch;
-                print("Detection took ${endTime - startTime}");
-
-                widget.setRecognitions(recognitions, img.height, img.width);
-
-                isDetecting = false;
-              });
-            } else {
+            
               
-              Tflite.detectObjectOnFrame(
-                bytesList: img.planes.map((plane) {
-                  return plane.bytes;
-                }).toList(),
-                model: widget.model == yolo ? "YOLO" : "SSDMobileNet",
-                imageHeight: img.height,
-                imageWidth: img.width,
-                imageMean: widget.model == yolo ? 0 : 0,
-                imageStd: widget.model == yolo ? 255.0 : 255.0,
-                numResultsPerClass: 1,
-                threshold: widget.model == yolo ? 0.2 : 0.8,
-              ).then((recognitions) {
-                int endTime = new DateTime.now().millisecondsSinceEpoch;
-                print("Detection took ${endTime - startTime}");
-                
-                if(recognitions.length!=0){
-                  score = recognitions[0]["confidenceInClass"].toString();
-                  type = recognitions[0]["detectedClass"];
+            Tflite.detectObjectOnFrame(
+              bytesList: img.planes.map((plane) {
+                return plane.bytes;
+              }).toList(),
+              model: "SSDMobileNet",
+              imageHeight: img.height,
+              imageWidth: img.width,
+              imageMean: 0,
+              imageStd: 255.0,
+              numResultsPerClass: 1,
+              threshold: 0.8,
+            ).then((recognitions) {
+              int endTime = new DateTime.now().millisecondsSinceEpoch;
+              print("Detection took ${endTime - startTime}");
+            
+              widget.setRecognitions(recognitions, img.height, img.width);
 
-                  des = "Alto en sal";
-                }else{
-                  score="";
-                  type="";
-                  des= "";
-                }
-                
-                
-                widget.setRecognitions(recognitions, img.height, img.width);
-
-                isDetecting = false;
-              });
-            }
+              isDetecting = false;
+            });
+            
           }
         });
       });
@@ -145,17 +99,6 @@ class _CameraState extends State<Camera> {
     var screenRatio = screenH / screenW;
     var previewRatio = previewH / previewW;
 
-
-    
-
-   // return OverflowBox(
-     // maxHeight:
-       //   800.0,//screenRatio > previewRatio ? screenH : screenW / previewW * previewH,
-      //maxWidth:
-        //  400.0,//screenRatio > previewRatio ? screenH / previewH * previewW : screenW,
-     // child: CameraPreview(controller),
-   // );
-    ////////////
  
   return new Container(
     child: Stack(
@@ -168,48 +111,10 @@ class _CameraState extends State<Camera> {
               screenRatio > previewRatio ? screenH / previewH * previewW : screenW,
           child: CameraPreview(controller),
         ),
-
-     
-         /* Positioned(
-          bottom: 48.0,
-          left: 10.0,
-          right: 10.0,
-          child: Card(
-            color: Colors.white,
-            elevation: 8.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    "${type} ${score}",
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                      "${des}",
-                      style: TextStyle(color: Colors.black),),
-                ),
-              ],
-            ),
-          ),
-        ), */
       ],
     ),
   );
 
-
-    
-    ///////////
   }
 
   imageToByteListUint8(CameraImage img, int i) {}

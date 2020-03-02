@@ -5,7 +5,7 @@ import 'dart:math' as math;
 
 import 'camera.dart';
 import 'bndbox.dart';
-import 'models.dart';
+
 
 class HomePage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -25,61 +25,14 @@ class _HomePageState extends State<HomePage> {
   load() async {
     
   res = await Tflite.loadModel(
-            //model: "assets/ssd_mobilenet.tflite",
-            //labels: "assets/ssd_mobilenet.txt");
-            model: "assets/cuatro.tflite",
-            labels: "assets/cuatro.txt");
+            model: "assets/ssdv2.tflite",
+            labels: "assets/ssdv2.txt");
   }
   
   @override
   void initState() {
     super.initState();
     load();
-  }
-
-/*   loadModel() async {
-    String res;
-    switch (_model) {
-      case yolo:
-        res = await Tflite.loadModel(
-          model: "assets/yolov2_tiny.tflite",
-          labels: "assets/yolov2_tiny.txt",
-        );
-        break;
-
-      case mobilenet:
-        res = await Tflite.loadModel(
-            model: "assets/mobilenet_v1_1.0_224.tflite",
-            labels: "assets/mobilenet_v1_1.0_224.txt");
-        break;
-
-      case posenet:
-        res = await Tflite.loadModel(
-            model: "assets/posenet_mv1_075_float_from_checkpoints.tflite");
-        break;
-
-      case prueba:
-        res = await Tflite.loadModel(
-            model: "assets/cuatro.tflite",
-            labels: "assets/cuatro.txt");
-        break;
-      
-
-      default:
-        res = await Tflite.loadModel(
-            //model: "assets/ssd_mobilenet.tflite",
-            //labels: "assets/ssd_mobilenet.txt");
-            model: "assets/cuatro.tflite",
-            labels: "assets/cuatro.txt");
-    }
-    print(res);
-  } */
-
-  onSelect(model) {
-    setState(() {
-      _model = model;
-    });
-    //loadModel();
   }
 
   setRecognitions(recognitions, imageHeight, imageWidth) {
@@ -94,19 +47,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Size screen = MediaQuery.of(context).size;
     return Scaffold(
-      body: _model == ""
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  RaisedButton(
-                    child: const Text(ssd),
-                    onPressed: () => onSelect(ssd),
-                  )
-                ],
-              ),
-            )
-          : Stack(
+      body: Stack(
               children: [
                 Camera(
                   widget.cameras,
